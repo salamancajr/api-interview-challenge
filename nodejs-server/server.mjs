@@ -65,7 +65,8 @@ http
 
           await dbClient.query(`CREATE TABLE IF NOT EXISTS comments (
           commentId uuid PRIMARY KEY,
-          text VARCHAR(200)
+          text VARCHAR(200),
+          createdAt TIMESTAMP default CURRENT_TIMESTAMP
         )`)
           const randomUUIDVal = randomUUID()
 

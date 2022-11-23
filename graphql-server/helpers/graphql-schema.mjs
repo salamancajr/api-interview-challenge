@@ -2,6 +2,7 @@ export const typeDefs = `
   type Comment {
     commentid: String!
     text: String!
+    createdat: String!
   }
 
   type StatusObject {

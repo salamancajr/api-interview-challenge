@@ -4,9 +4,8 @@
   "description": "A simple REST API in node.js to store anonymous comments in a SQL db",
   "main": "server.mjs",
   "scripts": {
-    "start:dev": "nodemon ./server.mjs",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:prod": "docker compose build && docker compose up"
+    "start:docker": "docker compose build && docker compose up"
   },
   "author": "George Salamanca",
   "license": "ISC",

@@ -7,6 +7,7 @@ export const resolvers = {
         path: '/comments/list',
         method: 'GET',
       })
+      console.log('listComments at resolver query:', { comments })
       return comments
     },
   },

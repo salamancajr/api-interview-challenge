@@ -14,13 +14,19 @@ await redisClient.connect().then(console.log).catch(console.error)
 
 export const setCache = payload =>
   new Promise((resolve, reject) => {
-    redisClient.set('comments', JSON.stringify(payload), (err, res) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(res)
+    redisClient.set(
+      'comments',
+      JSON.stringify(payload),
+      'EX',
+      60 * 60 * 24,
+      (err, res) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(res)
+        }
       }
-    })
+    )
   })
 
 export const getCache = () =>
