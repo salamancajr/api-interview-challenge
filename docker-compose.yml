@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  api-interview-challenge:
+    build:
+      dockerfile: './Dockerfile'
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://postgres:password@db:5432/api-interview-challenge
+      - PORT=8000
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=api-interview-challenge
