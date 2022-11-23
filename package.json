@@ -1,0 +1,15 @@
+{
+  "name": "api-interview-challenge",
+  "version": "1.0.0",
+  "description": "A simple REST API in node.js to store anonymous comments in a SQL db",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "George Salamanca",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/server": "^4.1.1",
+    "graphql": "^16.6.0"
+  }
+}
