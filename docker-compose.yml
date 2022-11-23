@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  api-interview-challenge:
+  node-server:
     build:
       dockerfile: './Dockerfile'
     ports:
@@ -10,6 +10,17 @@ services:
     environment:
       - DATABASE_URL=postgres://postgres:password@db:5432/api-interview-challenge
       - PORT=8000
+  graphql-server:
+    build:
+      dockerfile: './Dockerfile-graphql'
+    ports:
+      - 4000:4000
+    depends_on:
+      - node-server
+    environment:
+      - PROXY_PORT=8000
+      - PROXY_HOST=host.docker.internal
+      - PORT=4000
   db:
     image: postgres
     environment:

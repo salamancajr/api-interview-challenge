@@ -59,8 +59,6 @@ http
             return
           }
 
-          //await dbClient.query('DROP TABLE comments')
-
           await dbClient.query(`CREATE TABLE IF NOT EXISTS comments (
           commentId uuid PRIMARY KEY,
           text VARCHAR(200)
