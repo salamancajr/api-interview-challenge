@@ -33,13 +33,19 @@ http
           return
         }
         console.log('No cache available')
-        const comments = await dbClient.query(`SELECT * FROM comments`)
-        console.log({ commentsLength: comments.rows?.length })
-        if (comments.rows) {
-          await setCache(comments.rows)
-          sendResJSON(200, comments.rows)
-        } else {
-          sendResJSON(404, { message: 'No comments in db' })
+
+        try {
+          const comments = await dbClient.query(`SELECT * FROM comments`)
+          console.log({ commentsLength: comments.rows?.length })
+          if (comments.rows) {
+            await setCache(comments.rows)
+            sendResJSON(200, comments.rows)
+          } else {
+            sendResJSON(404, { message: 'No comments in db' })
+          }
+        } catch (e) {
+          console.log('error at list', e)
+          sendResJSON(200, [])
         }
       } else if (url === '/comments/create' && method === 'POST') {
         let body = ''
