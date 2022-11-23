@@ -2,17 +2,23 @@ version: '3.8'
 services:
   node-server:
     build:
-      dockerfile: './Dockerfile'
+      dockerfile: './nodejs-server/Dockerfile'
+      context: '.'
     ports:
       - 8000:8000
     depends_on:
       - db
+      - cache
     environment:
       - DATABASE_URL=postgres://postgres:password@db:5432/api-interview-challenge
       - PORT=8000
+      - REDIS_HOST=host.docker.internal
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=redispassword
   graphql-server:
     build:
-      dockerfile: './Dockerfile-graphql'
+      dockerfile: './graphql-server/Dockerfile-graphql'
+      context: '.'
     ports:
       - 4000:4000
     depends_on:
@@ -27,3 +33,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=api-interview-challenge
+  cache:
+    image: 'redis:alpine'
+    ports:
+      - 6379:6379

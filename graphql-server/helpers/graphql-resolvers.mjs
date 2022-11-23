@@ -1,32 +1,6 @@
-import { ApolloServer } from '@apollo/server'
-import { startStandaloneServer } from '@apollo/server/standalone'
 import { httpRequest } from './http-request.mjs'
 
-const typeDefs = `
-  type Comment {
-    commentid: String!
-    text: String!
-  }
-
-  type StatusObject {
-    status: String
-  }
-
-  type DeletePayload {
-    commentId: String!
-  }
-  
-  type Query {
-    listComments: [Comment]
-  }
-  
-  type Mutation {
-    deleteComment(commentId: String!): StatusObject
-    createComment(text: String!): StatusObject
-  }
-`
-
-const resolvers = {
+export const resolvers = {
   Query: {
     listComments: async () => {
       const comments = await httpRequest({
@@ -43,6 +17,8 @@ const resolvers = {
         path: `/comments/delete?commentId=${args.commentId}`,
         method: 'DELETE',
       })
+
+      console.log({ comments })
       return comments
     },
     createComment: async (parent, args) => {
@@ -58,14 +34,3 @@ const resolvers = {
     },
   },
 }
-
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-})
-
-const { url } = await startStandaloneServer(server, {
-  listen: { port: process.env.PORT },
-})
-
-console.log(`🚀 Server ready at: ${url}`)

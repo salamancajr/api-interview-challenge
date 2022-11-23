@@ -1,20 +1,15 @@
 import * as http from 'http'
-import pg from 'pg'
 import { randomUUID } from 'crypto'
 import { parse as urlParse } from 'url'
+import {
+  getCache,
+  setCache,
+  redisClient,
+  delCacheKey,
+} from './data-sources/redis.mjs'
+import { dbClient } from './data-sources/postgres.mjs'
 
-const { DATABASE_URL, PORT } = process.env
-
-const dbClient = new pg.Pool({
-  connectionString: DATABASE_URL,
-})
-
-try {
-  await dbClient.connect()
-  console.log('connected to database')
-} catch (err) {
-  console.error('database connection error', err.stack)
-}
+const { PORT } = process.env
 
 http
   .createServer(async (req, res) => {
@@ -22,17 +17,26 @@ http
     console.log(url)
     console.log(method)
 
-    const sendResJSON = (status, payload) => {
+    const sendResJSON = (status, payload, isString) => {
       res.setHeader('Content-Type', 'application/json')
       res.statusCode = status
-      res.end(JSON.stringify(payload))
+
+      res.end(isString ? payload : JSON.stringify(payload))
     }
 
     try {
       if (url === '/comments/list' && method === 'GET') {
+        const cache = await getCache()
+        if (cache) {
+          console.log('Grabbing from cache', cache)
+          sendResJSON(200, cache, true)
+          return
+        }
+        console.log('No cache available')
         const comments = await dbClient.query(`SELECT * FROM comments`)
-        console.log({ comments: comments.rows })
+        console.log({ commentsLength: comments.rows?.length })
         if (comments.rows) {
+          await setCache(comments.rows)
           sendResJSON(200, comments.rows)
         } else {
           sendResJSON(404, { message: 'No comments in db' })
@@ -63,14 +67,17 @@ http
           commentId uuid PRIMARY KEY,
           text VARCHAR(200)
         )`)
+          const randomUUIDVal = randomUUID()
 
           const query = {
             text: 'INSERT INTO comments(commentId, text) VALUES($1, $2)',
-            values: [randomUUID(), requestBody.text],
+            values: [randomUUIDVal, requestBody.text],
           }
 
           const res = await dbClient.query(query)
           console.log({ res })
+
+          await delCacheKey('comments')
           sendResJSON(201, { status: 'ok' })
         })
       } else if (method === 'DELETE') {
@@ -86,6 +93,8 @@ http
         await dbClient.query(
           `DELETE from comments WHERE commentId='${commentId}'`
         )
+
+        await delCacheKey('comments')
         sendResJSON(200, { status: 'ok' })
       } else {
         sendResJSON(404, { message: 'Not Found', path: url, method: method })
