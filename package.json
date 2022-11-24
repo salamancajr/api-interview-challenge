@@ -1,0 +1,21 @@
+{
+  "name": "api-interview-challenge",
+  "version": "1.0.0",
+  "description": "A simple REST API in node.js to store anonymous comments in a SQL db",
+  "main": "server.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:docker": "docker compose build && docker compose up"
+  },
+  "author": "George Salamanca",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/server": "^4.1.1",
+    "graphql": "^16.6.0",
+    "pg": "^8.8.0",
+    "redis": "^4.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
